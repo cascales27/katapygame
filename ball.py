@@ -16,7 +16,9 @@ x = ANCHO //2
 y = ALTO // 2
 vx = -5
 vy = -5
+reloj = pg.time.Clock()
 while not game_over:
+    reloj.tick(60)
     #gestion de eventos
     for evento in pg.event.get():
         if evento.type == pg.QUIT:
