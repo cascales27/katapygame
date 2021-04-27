@@ -1,5 +1,19 @@
 import pygame as pg
 import sys
+from random import randint
+
+def rebotaX(x):
+    if x <=0 or x >=ANCHO:
+        return -1
+
+    return 1
+
+def rebotaY(y):
+    if y <=0 or y >=ALTO:
+        return -1
+
+    return 1
+
 
 ROJO = (255, 0, 0)
 AZUL = (0, 0, 255)
@@ -9,36 +23,42 @@ ANCHO = 800
 ALTO = 600
 
 pg.init()
-pantalla = pg.display.set_mode((800,600))
+pantalla = pg.display.set_mode((ANCHO, ALTO))
+reloj = pg.time.Clock()
+
+bolas = []
+for _ in range(10):
+    bola = {'x': randint(0, ANCHO),
+            'y': randint(0, ALTO),
+            'vx': randint(5, 10),
+            'vy': randint(5, 10),
+            'color': (randint(0, 255), randint(0,255), randint(0,255))
+    }
+    bolas.append(bola)
 
 game_over = False
-x = ANCHO //2 
-y = ALTO // 2
-vx = -5
-vy = -5
-reloj = pg.time.Clock()
 while not game_over:
-    reloj.tick(60)
-    #gestion de eventos
+    v = reloj.tick(60)
+    #Gestion de eventos
     for evento in pg.event.get():
         if evento.type == pg.QUIT:
             game_over = True
 
+    # Modificación de estado
+    for bola in bolas:
+        bola['x'] += bola['vx']
+        bola['y'] += bola['vy']
+
+        bola['vy'] *= rebotaY(bola['y'])
+        bola['vx'] *= rebotaX(bola['x'])
+
+
+    # Gestión de la pantalla
     pantalla.fill(NEGRO)
-    pg.draw.circle(pantalla, ROJO, (x, y), 10)
-    x += vx
-    y += vy
+    for bola in bolas:
+        pg.draw.circle(pantalla, bola['color'], (bola['x'], bola['y']), 10)
 
-    
-    if y == 0:
-        vy = 5
-    if y == ALTO:
-        vy = -5
 
-    if x == 0:
-        vx = 5
-    if x == ANCHO:
-        vx = -5
     pg.display.flip()
 
 pg.quit()
